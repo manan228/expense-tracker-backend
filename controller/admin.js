@@ -1,30 +1,30 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
-exports.postUser = async (req, res) => {
-  const userName = req.body.userName;
-  //   console.log(userName)
-  const email = req.body.email;
-  const password = req.body.password;
+exports.postUser = (req, res) => {
+  const { userName: username, email, password } = req.body;
 
-  try {
-    const response = await User.create({
-      username: userName,
-      email,
-      password,
-    });
-
-    console.log(response);
-    res.json({ success: true });
-  } catch (err) {
+  bcrypt.hash(password, 10, async (err, hash) => {
     console.log(err);
-    res.status(422).json(err);
-  }
+
+    try {
+      const response = await User.create({
+        username,
+        email,
+        password: hash,
+      });
+
+      console.log(response);
+      res.json({ success: true });
+    } catch (err) {
+      console.log(err);
+      res.status(422).json(err);
+    }
+  });
 };
 
 exports.postLogin = async (req, res) => {
-  //   console.log(req.body);
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
   try {
     const response = await User.findByPk(email);
@@ -34,11 +34,17 @@ exports.postLogin = async (req, res) => {
     } else {
       const userPassword = response.dataValues.password;
 
-      if (password === userPassword) {
-        res.json({ success: true });
-      } else {
-        res.status(401).json({ success: false });
-      }
+      bcrypt.compare(password, userPassword, (err, result) => {
+        if (err) {
+          throw new Error("Something went wrong");
+        }
+
+        if (result) {
+          res.json({ success: true });
+        } else {
+          res.status(401).json({ success: false });
+        }
+      });
     }
   } catch (err) {
     console.log(err);
