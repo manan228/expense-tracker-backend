@@ -1,4 +1,6 @@
 const User = require("../models/user");
+const Expense = require("../models/expense");
+
 const bcrypt = require("bcrypt");
 
 exports.postUser = (req, res) => {
@@ -46,6 +48,47 @@ exports.postLogin = async (req, res) => {
         }
       });
     }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.postAddExpense = async (req, res) => {
+  const { amount, description, category } = req.body;
+
+  try {
+    const response = await Expense.create({
+      amount,
+      description,
+      category,
+    });
+
+    console.log(response);
+    res.json(response);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getExpenses = async (req, res) => {
+
+  try {
+    const response = await Expense.findAll();
+
+    console.log(response);
+    res.json(response);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.deleteExpense = async (req, res) => {
+  const expenseId = req.params.expenseId;
+
+  try {
+    const response = await Expense.destroy({ where: { id: expenseId } });
+
+    res.json({ deleted: true });
   } catch (err) {
     console.log(err);
   }
