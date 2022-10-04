@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Razorpay = require("razorpay");
 
 const User = require("../models/user");
 const Expense = require("../models/expense");
@@ -63,8 +64,8 @@ exports.postLogin = async (req, res) => {
 
 exports.postAddExpense = async (req, res) => {
   const { amount, description, category } = req.body;
-  console.log(`inside postAddExpense`)
-  console.log(req.user)
+  console.log(`inside postAddExpense`);
+  console.log(req.user);
   try {
     const response = await Expense.create({
       amount,
@@ -90,7 +91,7 @@ exports.getExpenses = async (req, res) => {
     });
 
     console.log(response);
-    res.json(response);
+    res.json({ response, isPremium: req.user.dataValues.premium });
   } catch (err) {
     console.log(err);
   }
@@ -103,6 +104,39 @@ exports.deleteExpense = async (req, res) => {
     const response = await Expense.destroy({ where: { id: expenseId } });
 
     res.json({ deleted: true });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.buyPremium = async (req, res) => {
+  var instance = new Razorpay({
+    key_id: "rzp_test_DXYSkf3DFazDzA",
+    key_secret: "6ebuPSBPBGv6a4gVxahUmqzy",
+  });
+
+  const response = await instance.orders.create({
+    amount: 50000,
+    currency: "INR",
+  });
+
+  console.log("hii", response);
+  res.json(response);
+};
+
+exports.setPremium = async (req, res) => {
+  // const user = req.user;
+
+  try {
+    const user = await User.findByPk(req.user.email);
+    console.log("123");
+    console.log(user);
+    user.premium = req.params.orderId;
+    console.log(`after`);
+    console.log(user);
+    const response = await user.save();
+
+    res.json(user);
   } catch (err) {
     console.log(err);
   }

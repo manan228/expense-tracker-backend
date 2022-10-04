@@ -22,6 +22,11 @@ router.post(
 //   userAuthentication.authenticate,
 //   adminController.getExpenses
 // );
+router.post("/buy-premium", adminController.buyPremium);
 router.delete("/delete-expense/:expenseId", adminController.deleteExpense);
-
+router.get(
+  "/set-premium/:orderId",
+  userAuthentication.authenticate,
+  adminController.setPremium
+);
 module.exports = router;

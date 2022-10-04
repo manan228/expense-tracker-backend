@@ -11,8 +11,8 @@ exports.authenticate = async (req, res, next) => {
 
   try {
     const response = await User.findByPk(emailId);
-
-    req.user = response.dataValues;
+    console.log(response)
+    req.user = response
     next();
   } catch (err) {
     console.log(err);
