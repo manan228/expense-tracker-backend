@@ -1,7 +1,12 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const User = require("../models/user");
 const Expense = require("../models/expense");
 
-const bcrypt = require("bcrypt");
+const generateAccessToken = (id) => {
+  return jwt.sign({ emailId: id }, "abc");
+};
 
 exports.postUser = (req, res) => {
   const { userName: username, email, password } = req.body;
@@ -36,13 +41,16 @@ exports.postLogin = async (req, res) => {
     } else {
       const userPassword = response.dataValues.password;
 
+      console.log(response.dataValues);
       bcrypt.compare(password, userPassword, (err, result) => {
         if (err) {
           throw new Error("Something went wrong");
         }
 
         if (result) {
-          res.json({ success: true });
+          res.json({
+            token: generateAccessToken(response.dataValues.email),
+          });
         } else {
           res.status(401).json({ success: false });
         }
@@ -55,12 +63,14 @@ exports.postLogin = async (req, res) => {
 
 exports.postAddExpense = async (req, res) => {
   const { amount, description, category } = req.body;
-
+  console.log(`inside postAddExpense`)
+  console.log(req.user)
   try {
     const response = await Expense.create({
       amount,
       description,
       category,
+      userEmail: req.user.email,
     });
 
     console.log(response);
@@ -71,9 +81,13 @@ exports.postAddExpense = async (req, res) => {
 };
 
 exports.getExpenses = async (req, res) => {
-
+  console.log("inside getExpense");
+  console.log(req.user);
   try {
-    const response = await Expense.findAll();
+    // const response = req.user.getExpense();
+    const response = await Expense.findAll({
+      where: { userEmail: req.user.email },
+    });
 
     console.log(response);
     res.json(response);
