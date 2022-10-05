@@ -30,4 +30,6 @@ router.get(
   adminController.setPremium
 );
 router.get("/all-users", adminController.fetchAllUsers);
+router.post("/password/forgotpassword", adminController.forgotPassword);
+
 module.exports = router;

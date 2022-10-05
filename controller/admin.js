@@ -116,7 +116,7 @@ exports.getExpensesPremium = async (req, res) => {
     });
 
     console.log(response);
-    res.json(response)
+    res.json(response);
   } catch (err) {
     console.log(err);
   }
@@ -173,4 +173,8 @@ exports.fetchAllUsers = async (req, res) => {
   const response = await User.findAll();
 
   res.json(response);
+};
+
+exports.forgotPassword = (req, res) => {
+  res.json({ msg: "from backend forgot password api called" });
 };
