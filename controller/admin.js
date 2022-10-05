@@ -4,6 +4,7 @@ const Razorpay = require("razorpay");
 
 const User = require("../models/user");
 const Expense = require("../models/expense");
+const { NUMBER } = require("sequelize");
 
 const generateAccessToken = (id) => {
   return jwt.sign({ emailId: id }, "abc");
@@ -50,6 +51,7 @@ exports.postLogin = async (req, res) => {
 
         if (result) {
           res.json({
+            response,
             token: generateAccessToken(response.dataValues.email),
           });
         } else {
@@ -63,7 +65,9 @@ exports.postLogin = async (req, res) => {
 };
 
 exports.postAddExpense = async (req, res) => {
+  // const { amount, description, category, totalExpense } = req.body;
   const { amount, description, category } = req.body;
+  // console.log(totalExpense)
   console.log(`inside postAddExpense`);
   console.log(req.user);
   try {
@@ -73,6 +77,11 @@ exports.postAddExpense = async (req, res) => {
       category,
       userEmail: req.user.email,
     });
+
+    req.user.totalExpense = amount + req.user.totalExpense;
+    console.log(`98765`);
+    console.log(req.user);
+    await req.user.save();
 
     console.log(response);
     res.json(response);
@@ -92,6 +101,22 @@ exports.getExpenses = async (req, res) => {
 
     console.log(response);
     res.json({ response, isPremium: req.user.dataValues.premium });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getExpensesPremium = async (req, res) => {
+  const userEmail = req.params.userEmail;
+  console.log(`get expenses premium called`);
+
+  try {
+    const response = await Expense.findAll({
+      where: { userEmail },
+    });
+
+    console.log(response);
+    res.json(response)
   } catch (err) {
     console.log(err);
   }
@@ -140,4 +165,12 @@ exports.setPremium = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+exports.fetchAllUsers = async (req, res) => {
+  console.log(`inside fetch all users`);
+
+  const response = await User.findAll();
+
+  res.json(response);
 };

@@ -10,6 +10,11 @@ router.get(
   userAuthentication.authenticate,
   adminController.getExpenses
 );
+router.get(
+  "/get-expenses/:userEmail",
+  // userAuthentication.authenticate,
+  adminController.getExpensesPremium
+);
 router.post("/add-user", adminController.postUser);
 router.post("/login", adminController.postLogin);
 router.post(
@@ -17,11 +22,6 @@ router.post(
   userAuthentication.authenticate,
   adminController.postAddExpense
 );
-// router.get(
-//   "/get-expenses",
-//   userAuthentication.authenticate,
-//   adminController.getExpenses
-// );
 router.post("/buy-premium", adminController.buyPremium);
 router.delete("/delete-expense/:expenseId", adminController.deleteExpense);
 router.get(
@@ -29,4 +29,5 @@ router.get(
   userAuthentication.authenticate,
   adminController.setPremium
 );
+router.get("/all-users", adminController.fetchAllUsers);
 module.exports = router;
