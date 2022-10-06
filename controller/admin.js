@@ -1,13 +1,48 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Razorpay = require("razorpay");
+const AWS = require("aws-sdk");
 
 const User = require("../models/user");
 const Expense = require("../models/expense");
-const { NUMBER } = require("sequelize");
+const FileDownloaded = require("../models/fileDownloaded");
 
 const generateAccessToken = (id) => {
   return jwt.sign({ emailId: id }, "abc");
+};
+
+const uploadToS3 = (data, filename) => {
+  const BUCKET_NAME = "expensetrackingappsharpener";
+  const IAM_USER_KEY = "AKIAXVISH54OF5V7M75L";
+  const IAM_USER_SECRET = "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";
+
+  let s3bucket = new AWS.S3({
+    accessKeyId: IAM_USER_KEY,
+    secretAccessKey: IAM_USER_SECRET,
+    // Bucket: BUCKET_NAME,
+  });
+
+  // s3bucket.createBucket(() => {
+  const params = {
+    Bucket: BUCKET_NAME,
+    Key: filename,
+    Body: data,
+    ACL: "public-read",
+  };
+
+  return new Promise((resolve, reject) => {
+    s3bucket.upload(params, (err, s3response) => {
+      if (err) {
+        console.log(`something went wrong`);
+        reject(err);
+      } else {
+        console.log("success", s3response);
+        console.log(s3response.Location);
+        resolve(s3response.Location);
+      }
+    });
+  });
+  // });
 };
 
 exports.postUser = (req, res) => {
@@ -170,11 +205,55 @@ exports.setPremium = async (req, res) => {
 exports.fetchAllUsers = async (req, res) => {
   console.log(`inside fetch all users`);
 
-  const response = await User.findAll();
+  try {
+    const response = await User.findAll();
 
-  res.json(response);
+    res.json(response);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.forgotPassword = (req, res) => {
   res.json({ msg: "from backend forgot password api called" });
+};
+
+exports.downloadExpense = async (req, res) => {
+  try {
+    const expenses = await req.user.getExpenses();
+    console.log(`download`);
+    console.log(expenses);
+
+    const userEmail = req.user.email;
+
+    const stringifiedExpenses = JSON.stringify(expenses);
+
+    const filename = `Expenses${userEmail}/${new Date()}.txt`;
+
+    const fileURL = await uploadToS3(stringifiedExpenses, filename);
+    console.log(`backend response fileURL`);
+    console.log(fileURL);
+
+    const response = await FileDownloaded.create({ url: fileURL, userEmail });
+
+    console.log(response);
+
+    res.json(fileURL);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getFilesURL = async (req, res) => {
+  console.log(req.user);
+  const userEmail = req.user.email;
+
+  try {
+    const response = await FileDownloaded.findAll({ where: { userEmail } });
+
+    console.log(response);
+    res.json(response);
+  } catch (err) {
+    console.log(err);
+  }
 };

@@ -7,6 +7,7 @@ const adminRoutes = require("./routes/admin");
 
 const User = require("./models/user");
 const Expense = require("./models/expense");
+const FileDownloaded = require("./models/fileDownloaded");
 
 const app = express();
 app.use(cors());
@@ -16,6 +17,9 @@ app.use(adminRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
+
+User.hasMany(FileDownloaded);
+FileDownloaded.belongsTo(User);
 
 sequelize
   // .sync({ force: true })
