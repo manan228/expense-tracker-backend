@@ -6,7 +6,7 @@ exports.authenticate = async (req, res, next) => {
   console.log('inside auth')
   console.log(token);
 
-  const { emailId } = jwt.verify(token, "abc");
+  const { emailId } = jwt.verify(token, process.env.JWT_PASSWORD_KEY);
   console.log("user Email:", emailId);
 
   try {
