@@ -45,7 +45,7 @@ const uploadToS3 = (data, filename) => {
   // });
 };
 
-const ITEMS_PER_PAGE = 5;
+
 
 exports.postUser = (req, res) => {
   const { userName: username, email, password } = req.body;
@@ -128,6 +128,9 @@ exports.postAddExpense = async (req, res) => {
 };
 
 exports.getExpenses = async (req, res) => {
+  // const ITEMS_PER_PAGE = 5
+  console.log(req.header("itemsPerPage"))
+  const ITEMS_PER_PAGE = Number(req.header("itemsPerPage"));
   console.log("inside getExpense");
   console.log(req.query.page);
   const page = req.query.page;
