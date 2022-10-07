@@ -45,6 +45,8 @@ const uploadToS3 = (data, filename) => {
   // });
 };
 
+const ITEMS_PER_PAGE = 5;
+
 exports.postUser = (req, res) => {
   const { userName: username, email, password } = req.body;
 
@@ -127,15 +129,39 @@ exports.postAddExpense = async (req, res) => {
 
 exports.getExpenses = async (req, res) => {
   console.log("inside getExpense");
-  console.log(req.user);
+  console.log(req.query.page);
+  const page = req.query.page;
+  const expenseToSkip = (page - 1) * ITEMS_PER_PAGE;
+
   try {
     // const response = req.user.getExpense();
-    const response = await Expense.findAll({
+    const expenseCount = await Expense.count({
       where: { userEmail: req.user.email },
     });
 
-    console.log(response);
-    res.json({ response, isPremium: req.user.dataValues.premium });
+    console.log(`abcdefghij`, expenseCount)
+    const response = await Expense.findAll({
+      where: { userEmail: req.user.email },
+      offset: expenseToSkip,
+      limit: ITEMS_PER_PAGE,
+    });
+
+    console.log("123", response);
+
+    const dataToFrontEnd = {
+      response,
+      isPremium: req.user.dataValues.premium,
+      paginationData: {
+        currentPage: Number(page),
+        hasNextPage: ITEMS_PER_PAGE * page < expenseCount,
+        hasPreviousPage: page > 1,
+        nextPage: Number(page) +  1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(expenseCount / ITEMS_PER_PAGE),
+      },
+    };
+
+    res.json(dataToFrontEnd);
   } catch (err) {
     console.log(err);
   }
