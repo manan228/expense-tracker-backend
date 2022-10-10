@@ -21,7 +21,6 @@ const User = sequelize.define("user", {
   },
   premium: {
     type: Sequelize.STRING,
-    // defaultValue: false,
   },
   "totalExpense": {
     type: Sequelize.INTEGER,

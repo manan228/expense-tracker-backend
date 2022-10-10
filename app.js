@@ -6,6 +6,10 @@ const compression = require("compression");
 const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
+const dotenv = require("dotenv");
+// const https = require("https")
+
+dotenv.config();
 
 const sequelize = require("./util/database");
 const adminRoutes = require("./routes/admin");
@@ -26,6 +30,9 @@ app.use(compression());
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 app.use(bodyParser.json());
+
+// const privateKey = fs.readFileSync('server.key');
+// const certificate = fs.readFileSync('server.cert');
 
 app.use(adminRoutes);
 
