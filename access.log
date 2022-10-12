@@ -1,0 +1,1 @@
+::1 - - [11/Oct/2022:19:47:38 +0000] "GET /expense-tracker-frontend/favicon.ico HTTP/1.1" 404 175 "http://localhost:3000/expense-form/?page=1" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
