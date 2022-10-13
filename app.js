@@ -18,6 +18,8 @@ const User = require("./models/user");
 const Expense = require("./models/expense");
 const FileDownloaded = require("./models/fileDownloaded");
 
+console.log(`testing cicd pipleine`);
+
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "access.log"),
   { flag: "a" }
