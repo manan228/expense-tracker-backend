@@ -1,16 +1,31 @@
-const Sequelize = require("sequelize");
+// const mongoose = require("mongoose");
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USERNAME,
-  process.env.DB_PASSWORD,
-  {
-    dialect: "mysql",
-    host: process.env.DB_HOST,
-  }
-);
+// mongoose
+//   .connect(
+//     "mongodb+srv://manan:ev9Zmj6k4COLrT4D@cluster0.ych5lna.mongodb.net/?retryWrites=true&w=majority"
+//   )
+//   .then(() => {
+//     // console.log(`connected`);
+//     console.log(`connected`);
+//   })
+//   .catch((err) => {
+//     console.log(`inside err`);
+//     console.log(err);
+//   });
 
-module.exports = sequelize; 
+// const Sequelize = require("sequelize");
+
+// const sequelize = new Sequelize(
+//   process.env.DB_NAME,
+//   process.env.DB_USERNAME,
+//   process.env.DB_PASSWORD,
+//   {
+//     dialect: "mysql",
+//     host: process.env.DB_HOST,
+//   }
+// );
+
+// module.exports = sequelize;
 
 // const sequelize = new Sequelize(
 //   "expense",
@@ -22,4 +37,4 @@ module.exports = sequelize;
 //   }
 // );
 
-// module.exports = sequelize; 
+// module.exports = sequelize;
