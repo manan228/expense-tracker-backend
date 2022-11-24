@@ -11,7 +11,7 @@ router.get(
   adminController.getExpenses
 );
 
-router.get("/get-expenses/:userEmail", adminController.getExpensesPremium);
+router.get("/get-expenses/:userId", adminController.getExpensesPremium);
 
 router.post("/add-user", adminController.postUser);
 
@@ -23,11 +23,11 @@ router.post(
   adminController.postAddExpense
 );
 
-router.get(
-  "/download",
-  userAuthentication.authenticate,
-  adminController.downloadExpense
-);
+// router.get(
+//   "/download",
+//   userAuthentication.authenticate,
+//   adminController.downloadExpense
+// );
 
 router.post("/buy-premium", adminController.buyPremium);
 
